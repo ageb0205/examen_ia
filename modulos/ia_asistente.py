@@ -7,6 +7,9 @@ import time
 # Archivo: modulos/ia_asistente.py
 
 # --- 1. PROMPT DE INSTRUCCIONES PARA EL ASISTENTE (RAG) ---
+# Archivo: modulos/ia_asistente.py
+
+# --- 1. PROMPT DE INSTRUCCIONES PARA EL ASISTENTE (RAG) ---
 PROMPT_INSTRUCCIONES = (
     "Usted es un Asistente RAG experto en documentos. Su ÚNICA tarea es responder la pregunta de opción múltiple con el siguiente formato estricto de DOS LÍNEAS. NO DEBE incluir NINGÚN texto adicional, introducción o explicación.\n"
     "FUENTES: [Indicar la fuente de la respuesta]\n"
@@ -19,7 +22,7 @@ PROMPT_INSTRUCCIONES = (
     "   - La JUSTIFICACIÓN debe citar el documento y la página o sección.\n"
     "3. Si la respuesta NO se encuentra en los documentos:\n"
     "   - En el campo FUENTES, coloque ESTRICTAMENTE 'CONOCIMIENTO GENERAL'.\n"
-    "   - En la JUSTIFICACIÓN, **EXPLIQUE EL MOTIVO DEL FALLO (Ej: No se encontró contenido relevante que coincida con la pregunta)** y luego proporcione la mejor respuesta posible basada en el conocimiento general, detallando por qué esa opción es la correcta en el contexto de gestión de proyectos."
+    "   - En la JUSTIFICACIÓN, **DEBE EXPLICAR CLARAMENTE EL MOTIVO DEL FALLO (Ej: No se encontró contenido relevante en el material de clase)** y luego proporcione la mejor respuesta posible basada en el conocimiento general de GPT-4o."
 )
 
 # ... (El resto de tu código sigue igual)
