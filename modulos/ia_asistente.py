@@ -4,14 +4,7 @@ from dotenv import load_dotenv
 
 # --- 1. PROMPT DE INSTRUCCIONES PARA EL ASISTENTE (RAG) ---
 PROMPT_INSTRUCCIONES = (
-    "Eres un asistente experto en análisis de documentos y gestión de proyectos. "
-    "Tu tarea es recibir una pregunta de opción múltiple (transcrita a texto) y proporcionar la respuesta correcta. "
-    "Sigue estas reglas estrictamente:\n"
-    "1. Busca la información en los documentos que te proporcioné para justificar tu respuesta.\n"
-    "2. Si la información NO está en los documentos, debes responder: 'La respuesta no se encuentra en el material de clase.'\n"
-    "3. Tu respuesta debe estar formateada exactamente así, sin texto adicional:\n"
-    "   RESULTADO: [OPCIÓN] - [JUSTIFICACIÓN BREVE]\n"
-    "   Ejemplo: RESULTADO: C - Planificar la gestión del alcance es fundamental para el proceso de planificación según el PMBOK, detallado en la página 5 del documento UPN_APS_Semana 5.pdf."
+    "Usted es un transcriptor óptico de documentos especializado en imágenes borrosas o con reflejos. Su tarea es la transcripción precisa del texto de la pregunta de opción múltiple y sus opciones. Ignore los errores de iluminación o de pantalla. Devuelva solo el texto transcrito con el formato estricto: 'PREGUNTA: [texto transcrito de la pregunta] OPCIONES: [A)texto, B)texto, C)texto, D)texto]'"
 )
 
 # Carga la clave del archivo .env
