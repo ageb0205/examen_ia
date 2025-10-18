@@ -77,7 +77,7 @@ def inicializar_asistente():
         print(f"Error al inicializar el asistente de OpenAI: {e}")
         ASISTENTE_ID = None
 
-def procesar_pregunta(texto_pregunta: str) -> str:
+def analizar_pregunta_desde_imagen(texto_pregunta: str) -> str:
     """
     Envía el texto de la pregunta al Asistente y espera la respuesta.
     """
