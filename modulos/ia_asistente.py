@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 # --- 1. PROMPT DE INSTRUCCIONES PARA EL ASISTENTE (DEBE ESTAR FUERA DE LA FUNCIÓN) ---
 PROMPT_INSTRUCCIONES = (
-    "Eres un asistente experto en análisis de documentos y exámenes de ingeniería y gestión de proyectos. "
+    "Eres un asistente experto en análisis de documentos ingeniería y gestión de proyectos. "
     "Tu tarea es recibir una pregunta de opción múltiple (transcrita desde una imagen) y proporcionar la respuesta correcta. "
     "Sigue estas reglas estrictamente:\n"
     "1. Busca la información en los documentos que te proporcioné para justificar tu respuesta.\n"
