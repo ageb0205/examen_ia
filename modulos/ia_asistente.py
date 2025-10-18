@@ -3,13 +3,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import time
 
-
-# Archivo: modulos/ia_asistente.py
-
 # --- 1. PROMPT DE INSTRUCCIONES PARA EL ASISTENTE (RAG) ---
-# Archivo: modulos/ia_asistente.py
-
-# --- 1. PROMPT DE INSTRUCCIONES PARA EL ASISTENTE (RAG) ---
+# ESTE PROMPT DEBE SER EL DE BÚSQUEDA Y JUSTIFICACIÓN.
 PROMPT_INSTRUCCIONES = (
     "Usted es un Asistente RAG experto en documentos. Su ÚNICA tarea es responder la pregunta de opción múltiple con el siguiente formato estricto de DOS LÍNEAS. NO DEBE incluir NINGÚN texto adicional, introducción o explicación.\n"
     "FUENTES: [Indicar la fuente de la respuesta]\n"
@@ -22,30 +17,27 @@ PROMPT_INSTRUCCIONES = (
     "   - La JUSTIFICACIÓN debe citar el documento y la página o sección.\n"
     "3. Si la respuesta NO se encuentra en los documentos:\n"
     "   - En el campo FUENTES, coloque ESTRICTAMENTE 'CONOCIMIENTO GENERAL'.\n"
-    "   - En la JUSTIFICACIÓN, **DEBE EXPLICAR CLARAMENTE EL MOTIVO DEL FALLO (Ej: No se encontró contenido relevante en el material de clase)** y luego proporcione la mejor respuesta posible basada en el conocimiento general de GPT-4o."
+    "   - En la JUSTIFICACIÓN, DEBE EXPLICAR CLARAMENTE EL MOTIVO DEL FALLO (Ej: No se encontró contenido relevante en el material de clase) y luego proporcione la mejor respuesta posible basada en el conocimiento general de GPT-4o."
 )
-
-# ... (El resto de tu código sigue igual)
 
 # Carga la clave del archivo .env
 load_dotenv()
 CLIENTE = OpenAI()
-# **SOLUCIÓN AL FALLO 404:** Usamos el ID del asistente que Render ya creó
+# ASISTENTE_ID FORZADO: Este es el ID real de tu asistente en OpenAI
 ASISTENTE_ID = "asst_V4lApoD3ZjBqn9I6nKVdwMbi" 
 
 def inicializar_asistente():
     """
-    Simplemente verifica la existencia del ASISTENTE_ID y no intenta crearlo de nuevo
-    para evitar el timeout en Render. (El ID es forzado arriba).
+    Verifica la existencia del ASISTENTE_ID pre-creado.
     """
     global ASISTENTE_ID
     
-    if ASISTENTE_ID != "asst_V4lApoD3ZjBqn9I6nKVdwMbi": # Solo creamos si el ID de reserva está activo
+    if ASISTENTE_ID:
         print(f"✅ Usando Asistente pre-creado: {ASISTENTE_ID}")
         return
 
-    # Si tuvieras que crearlo, el código de creación iría aquí, pero lo hemos saltado 
-    # para garantizar que Render se inicie rápido y use el ID conocido.
+    # Si por alguna razón el ID no estuviera (ej: en desarrollo), aquí iría la lógica de creación
+    print("⚠️ ERROR: ASISTENTE_ID no definido.")
 
 # --- FUNCIÓN 1: SÓLO RAG (Consulta de PDFs) ---
 
@@ -58,7 +50,7 @@ def consultar_asistente_rag(texto_pregunta: str) -> str:
         return "Error: El asistente de IA no está inicializado correctamente."
         
     try:
-        # **CORRECCIÓN FINAL:** Crear un hilo nuevo para esta solicitud
+        # **SOLUCIÓN DE ESTABILIDAD:** Crear un hilo nuevo para esta solicitud
         hilo = CLIENTE.beta.threads.create()
         thread_id_actual = hilo.id 
         
@@ -93,21 +85,22 @@ def consultar_asistente_rag(texto_pregunta: str) -> str:
         print(f"Error al procesar la pregunta con el asistente: {e}")
         return "Error interno al comunicarse con la IA."
 
-# --- FUNCIÓN 2: VISIÓN + RAG ---
+# --- FUNCIÓN 2: VISIÓN + RAG (La función que llama a la API de Flask) ---
 
 def analizar_pregunta_desde_imagen(imagen_base64: str) -> str:
     """
     Usa GPT-4o para transcribir la pregunta (Visión) y luego la pasa al RAG.
     """
-    # ... (El código de la función analizar_pregunta_desde_imagen sigue igual)
     from openai import OpenAI
     
     CLIENTE_V = OpenAI()
     
-    VISION_PROMPT = "Usted es un transcriptor óptico de documentos. Su única tarea es transcribir el texto visible, identificando el campo 'PREGUNTA:' y el campo 'OPCIONES:' para facilitar el ingreso de datos a un sistema interno. Por favor, devuelva el resultado en el formato estricto: 'PREGUNTA: [texto de la pregunta] OPCIONES: [A)texto, B)texto, C)texto, D)texto]'"
+    # **CORRECCIÓN CLAVE:** PROMPT DE TRANSCRIPCIÓN SIMPLE
+    VISION_PROMPT = "Transcriba el texto completo de la imagen, incluyendo la pregunta y cada opción de respuesta, y devuélvalo en el formato estricto: 'PREGUNTA: [texto de la pregunta] OPCIONES: [A)texto, B)texto, C)texto, D)texto]'"
     
     try:
-        # 1. PASO DE VISIÓN
+        print("1. Transcribiendo imagen a texto con GPT-4 Vision (Visión)...")
+        
         response_vision = CLIENTE_V.chat.completions.create(
             model="gpt-4o", 
             messages=[
@@ -116,7 +109,7 @@ def analizar_pregunta_desde_imagen(imagen_base64: str) -> str:
                     "content": [
                         {
                             "type": "text", 
-                            "text": VISION_PROMPT 
+                            "text": VISION_PROMPT  
                         },
                         {
                             "type": "image_url",
@@ -135,7 +128,7 @@ def analizar_pregunta_desde_imagen(imagen_base64: str) -> str:
     except Exception as e:
         return f"Error en el paso de visión (GPT-4o): {e}"
 
-    # 2. PASO DE RAG
+    # 2. PASO DE RAG: Usar el texto transcrito para obtener la respuesta del Asistente
     print("2. Consultando Asistente RAG con el texto transcrito...")
     respuesta_rag = consultar_asistente_rag(texto_transcrito) 
     
